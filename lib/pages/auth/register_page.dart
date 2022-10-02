@@ -1,20 +1,20 @@
-import 'package:chat_app/pages/auth/register_page.dart';
+import 'package:chat_app/pages/auth/login_page.dart';
 import 'package:chat_app/shared/constants.dart';
+import 'package:chat_app/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../widgets/widgets.dart';
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   String email = "";
   String password = "";
+  String fullName = "";
   final formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -30,14 +30,33 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 const Text('Chatty', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
                 const SizedBox(height: 15,),
-                const Text('Login and chat with your friends', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),),
+                const Text('Create an account to chat and explore', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),),
                 const SizedBox(height: 25,),
-                Image.asset('assets/LoginImage.png'),
-                const SizedBox(height: 25,),
+                Image.asset('assets/SignUp.png'),
                 TextFormField(
                   decoration: textInputDecoration.copyWith(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email, color: Theme.of(context).primaryColor,)
+                      labelText: 'Full Name',
+                      prefixIcon: Icon(Icons.person, color: Theme.of(context).primaryColor,)
+                  ),
+                  onChanged: (value){
+                    setState(() {
+                      fullName = value;
+                    });
+                  },
+                  validator: (value){
+                    if(value!.isNotEmpty){
+                      return null;
+                    }
+                    else{
+                      return "Name cannot be empty";
+                    }
+                  },
+                ),
+                const SizedBox(height: 10,),
+                TextFormField(
+                  decoration: textInputDecoration.copyWith(
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.email, color: Theme.of(context).primaryColor,)
                   ),
                   onChanged: (value){
                     setState(() {
@@ -76,31 +95,31 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))
+                        primary: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))
                     ),
                     onPressed: (){
-                      login();
+                      register();
                     },
-                    child: const Text('Sign In',
+                    child: const Text('Register',
                       style: TextStyle(color: Colors.white, fontSize: 16),),
                   ),
                 ),
                 const SizedBox(height: 10,),
                 Text.rich(
-                  TextSpan(
-                    text: "Don't have an account? ",
-                    style: const TextStyle(color: Colors.black, fontSize: 14),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: "Register here",
-                        style: TextStyle(color: Theme.of(context).primaryColor),
-                        recognizer: TapGestureRecognizer()..onTap = (){
-                          nextScreen(context, const RegisterPage());
-                        }
-                      )
-                    ]
-                  )
+                    TextSpan(
+                        text: "Already have an account?  ",
+                        style: const TextStyle(color: Colors.black, fontSize: 14),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: "Login now",
+                              style: TextStyle(color: Theme.of(context).primaryColor),
+                              recognizer: TapGestureRecognizer()..onTap = (){
+                                nextScreen(context, const LoginPage());
+                              }
+                          )
+                        ]
+                    )
                 )
               ],
             ),
@@ -109,5 +128,5 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-  login(){}
+  register(){}
 }
