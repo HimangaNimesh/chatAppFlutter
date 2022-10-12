@@ -1,10 +1,24 @@
 import 'package:chat_app/service/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../helper/helper_function.dart';
+
 class AuthService{
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   //login
+  Future loginWithEmailandPassword(String email, String password)async{
+    try{
+      User user = (await firebaseAuth.signInWithEmailAndPassword(email: email, password: password)).user!;
+
+      if(user!= null){
+        return true;
+      }
+    }
+    on FirebaseAuthException catch(e){
+      return e.message;
+    }
+  }
 
   //register
   Future registerUserWithEmailandPassword(String email, String password, String fullName)async{
@@ -13,7 +27,7 @@ class AuthService{
 
       if(user!= null){
         //call database service to update the user data
-        await DatabaseService(uid: user.uid).updateUserData(fullName, email);
+        await DatabaseService(uid: user.uid).savingUserData(fullName, email);
         return true;
       }
     }
@@ -23,4 +37,14 @@ class AuthService{
   }
 
   //signout
+  Future signOut()async{
+    try{
+      await HelperFunctions.saveUserLoggedInStatus(false);
+      await HelperFunctions.saveUserEmailSF("");
+      await HelperFunctions.saveUserNameSF("");
+      await firebaseAuth.signOut();
+    }catch(e){
+      return null;
+    }
+  }
 }

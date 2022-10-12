@@ -1,8 +1,14 @@
 import 'package:chat_app/pages/auth/register_page.dart';
+import 'package:chat_app/pages/home_page.dart';
+import 'package:chat_app/service/auth_service.dart';
+import 'package:chat_app/service/database_service.dart';
 import 'package:chat_app/shared/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../../helper/helper_function.dart';
 import '../../widgets/widgets.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,11 +21,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String email = "";
   String password = "";
+  bool _isLoading = false;
+  AuthService authService = AuthService();
   final formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: _isLoading ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor,),) :SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 80),
           child: Form(
@@ -109,5 +117,31 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-  login(){}
+  login() async{
+    if(formkey.currentState!.validate()){
+      setState(() {
+        _isLoading = true;
+      });
+      await authService.loginWithEmailandPassword(email, password).then((value)async{
+        if(value == true){
+          QuerySnapshot snapshot =
+          await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+              .gettingUserData(email);
+          //saving the values to our shared preferences
+          await HelperFunctions.saveUserLoggedInStatus(true);
+          await HelperFunctions.saveUserEmailSF(email);
+          await HelperFunctions.saveUserNameSF(
+            snapshot.docs[0]['fullName']
+          );
+          nextScreenReplacement(context, const Homepage());
+        }
+        else{
+          showSnackBar(context, value, Colors.red);
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      });
+    }
+  }
 }
