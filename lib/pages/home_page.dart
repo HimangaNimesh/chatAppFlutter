@@ -81,7 +81,7 @@ class _HomepageState extends State<Homepage> {
             ),
             ListTile(
               onTap: (){
-                nextScreen(context, const ProfilePage());
+                nextScreenReplacement(context,  ProfilePage(email: email,userName: userName,));
               },
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               leading: const Icon(Icons.account_circle),
